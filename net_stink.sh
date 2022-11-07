@@ -3,7 +3,7 @@
 # Help menu information
 _prg_name="NET STINK"
 _cmd_name="net_stink"
-_version="0.1"
+_version="1.0"
 _link="https://github.com/itsAfeat/net_stink"
 
 # Which scans to do
