@@ -1,2 +1,2 @@
 # NET STINK
-A dumb little thing I made for learning bash
+A dumb little net scanner I made for learning bash
