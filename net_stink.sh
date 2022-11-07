@@ -94,7 +94,7 @@ else
 fi
 
 if [ $do_save -eq 0 ]; then
-    for i in {0..50}; do
+    for i in {0..255}; do
         ip=$(sed "s/*/$i/g" <<< "$ip_range")
         
         _ping=$(ping -W $timeout -c 1 $ip)
@@ -134,10 +134,12 @@ if [ $do_save -eq 0 ]; then
         done
     fi
 else
-    echo "Host scan results" > $file_name
-    echo -e "--------------------------------------------------------------\n" >> $file_name
+    echo -e "\e[1A\e[K${Italic}Scanning..."
     
-    for i in {0..50}; do
+    echo -e "\t\tHost scan results" > $file_name
+    echo -e "-------------------------------------------------\n" >> $file_name
+
+    for i in {0..255}; do
         tmp_ip=$(sed "s/*/$i/g" <<< "$ip_range")
         
         _ping=$(ping -W $timeout -c 1 $tmp_ip)
@@ -150,7 +152,8 @@ else
     done
 
     if [ $do_port -eq 1 ]; then
-        echo -e "${Bold}${Yellow}[!]${Color_Off} Starting port scan\n"
+        echo -e "\n${Bold}${Yellow}[!]${Color_Off} Starting port scan\n"
+        echo -e "${Italic}Scanning..."
         for ip in "${open_ips[@]}"; do
             open_ports=$(nc -z -vv -n $ip $port_range 2>&1 | awk '/open/ {print $3" "($4)}')
 
@@ -161,16 +164,16 @@ else
             fi
         done
 
-        echo -e "\n--------------------------------------------------------------" >> $file_name
-        echo -e "\n\nPort scan results" >> $file_name
-        echo -e "--------------------------------------------------------------" >> $file_name
+        echo -e "\n-----------------------------------------------" >> $file_name
+        echo -e "\n\n\t\tPort scan results" >> $file_name
+        echo -e "-------------------------------------------------" >> $file_name
 
         for key in "${!ip_dict[@]}"; do
-            echo -e "\n[>] $key" >> $file_name
+            echo -e "\n[+] $key" >> $file_name
             if [ "${ip_dict[$key]}" = "-1" ]; then
                 echo -e "\tNo open ports\n" >> $file_name
             else
-                echo -e "\t{ip_dict[$key]}\n" >> $file_name 
+                echo -e "\t${ip_dict[$key]}\n" >> $file_name 
             fi
         done
     fi
