@@ -120,6 +120,7 @@ if [ $do_save -eq 0 ]; then
 
             # Check if any ports where found, if not the open_ports array's first element will be an empty string
             if [ -z "${open_ports[0]}" ]; then
+                # Set the value in the dictionary to something recognizable
                 ip_dict["$ip"]="-1"
             else
                 ip_dict["$ip"]=$open_ports  
@@ -139,6 +140,7 @@ if [ $do_save -eq 0 ]; then
         done
     fi
 else
+    # Everything here is more or less the same as above, just with less outputs and more of that whole saving action
     echo -e "\e[1A\e[K${Italic}Scanning..."
     
     echo -e "\t\tHost scan results" > $file_name
