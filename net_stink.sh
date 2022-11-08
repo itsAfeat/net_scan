@@ -6,7 +6,7 @@ _cmd_name="net_stink"
 _version="1.0"
 _link="https://github.com/itsAfeat/net_stink"
 
-# Which scans to do
+# Operation flags to do
 do_clear=0
 do_port=0
 do_fast=0
@@ -72,6 +72,7 @@ if [ -z ${ip_range+x} ]; then
     exit
 fi
 
+# the arrays and dictionary for the ips and ports it finds
 open_ips=()
 open_ports=()
 declare -A ip_dict
@@ -95,12 +96,15 @@ fi
 
 if [ $do_save -eq 0 ]; then
     for i in {0..255}; do
+        # Replace every * in the ip with whatever i is
         ip=$(sed "s/*/$i/g" <<< "$ip_range")
         
         _ping=$(ping -W $timeout -c 1 $ip)
+        # Grab the loss percentage to check if the host is up or not
         result=$(echo "$_ping" | awk '/loss/ {print $6}')
         echo -e "\e[1A\e[K> ${Italic}$ip${Color_Off}"
         if [ "$result" != "100%" ]; then
+            # If the user is up, aka we get some sort of responds from them, print the ip and add it to the open_ips array
             echo -e "\e[1A\e[K${Bold}${Green}[+]${Color_Off} $ip\n"
             open_ips+=("$ip")
         fi
@@ -111,9 +115,10 @@ if [ $do_save -eq 0 ]; then
     if [ $do_port -eq 1 ]; then
         echo -e "${Bold}${Yellow}[!]${Color_Off} Starting port scan\n"
         for ip in "${open_ips[@]}"; do
+            # Use netcat to check which ports are open in the given port range
             open_ports=$(nc -z -vv -n $ip $port_range 2>&1 | awk '/open/ {print $3" "($4)}')
-            #echo -e "Funny${open_ports[0]}pis"
 
+            # Check if any ports where found, if not the open_ports array's first element will be an empty string
             if [ -z "${open_ports[0]}" ]; then
                 ip_dict["$ip"]="-1"
             else
